@@ -21,6 +21,7 @@ public class WebSocketMiddleware : IMiddleware
             {
                 WebSocketHandler webSocketHandler = _serviceProvider.GetRequiredService<WebSocketHandler>();
                 WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                _logger.LogInformation("New WebSocket connected");
 
                 await webSocketHandler.LoopAsync(webSocket);
             }
