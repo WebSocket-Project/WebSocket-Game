@@ -1,79 +1,38 @@
-using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts.Network;
-using NativeWebSocket;
-using Newtonsoft.Json;
-using Shared;
-using Shared.sdf;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class NetworkConnect : MonoBehaviour
 {
-    [SerializeField] private InputField _inputField;
-    WebSocket websocket;
+    [SerializeField] private TMP_InputField wsAdress;
+    [SerializeField] private TMP_InputField userName;
 
-    // Start is called before the first frame update
-    async void Start()
+    [SerializeField] private Button webSocketConnectBTN;
+    [SerializeField] private Button loginBTN;
+
+    private void Start()
     {
-        websocket = new WebSocket("ws://localhost:5184");
-
-        websocket.OnOpen += () =>
-        {
-            Debug.Log("Connection open!");
-        };
-
-        websocket.OnError += (e) =>
-        {
-            Debug.Log("Error! " + e);
-        };
-
-        websocket.OnClose += (e) =>
-        {
-            Debug.Log("Connection closed!");
-        };
-
-        websocket.OnMessage += (bytes) =>
-        {
-            var message = System.Text.Encoding.UTF8.GetString(bytes);
-            Debug.Log("OnMessage! " + message);
-        };
-
-        Invoke("SendLoginMessage", 1);
-
-        // waiting for messages
-        await websocket.Connect();
+        webSocketConnectBTN.onClick.AddListener(Connect);
+        loginBTN.onClick.AddListener(Login);
     }
 
-    void Update()
+    private void OnEnable()
     {
-#if !UNITY_WEBGL || UNITY_EDITOR
-        websocket.DispatchMessageQueue();
-#endif
+        NetworkManager.Instance.OnWebSocketOpen(Login);
     }
 
-    async void SendLoginMessage()
+    private void Connect()
     {
-        if (websocket.State == WebSocketState.Open)
+        //ex :
+        //ws://localhost:5184
+        NetworkManager.Instance.InitializeWebSocket(wsAdress.text);
+    }
+
+    private void Login()
+    {
+        if(ulong.TryParse(userName.text, out ulong number))
         {
-            var loginRequest = new LoginRequest();
-            loginRequest.PlayerId = 1234;
-            var loginJson = JsonConvert.SerializeObject(loginRequest);
-        
-            var request = new WebSocketRequest()
-            {
-                Protocol = Protocol.Login,
-                Payload = loginRequest
-            };
-            var requestJson = JsonConvert.SerializeObject(request);
-        
-            // Sending plain text
-            await websocket.SendText(requestJson);
+            NetworkManager.Instance.Login(number);
         }
-    }
-
-    private async void OnApplicationQuit()
-    {
-        await websocket.Close(); 
     }
 }

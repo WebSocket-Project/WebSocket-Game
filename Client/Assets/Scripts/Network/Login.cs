@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Shared.sdf
 {
@@ -11,5 +11,12 @@ namespace Shared.sdf
     public class LoginResponse
     {
         public string Message { get; set; } = string.Empty;
+    }
+
+    [Serializable]
+    internal class WebSocketRequest
+    {
+        public Protocol Protocol { get; set; }
+        public object Payload { get; set; }
     }
 }
