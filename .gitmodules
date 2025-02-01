@@ -1,0 +1,6 @@
+[submodule "Client/Assets/Scripts/Shared"]
+	path = Client/Assets/Scripts/Shared
+	url = https://github.com/WebSocket-Project/WebSocket-Game-Shared.git
+[submodule "Server/Server/Shared"]
+	path = Server/Server/Shared
+	url = https://github.com/WebSocket-Project/WebSocket-Game-Shared.git
